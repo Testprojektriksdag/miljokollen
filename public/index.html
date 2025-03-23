@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miljömotioner i Riksdagen</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 1rem; }
+    h1 { color: forestgreen; }
+    .motion { border-bottom: 1px solid #ccc; margin-bottom: 1.5rem; padding-bottom: 1rem; }
+    .motion h3 { margin: 0 0 0.5rem 0; }
+    .motion a { text-decoration: none; color: darkgreen; }
+  </style>
+</head>
+<body>
+  <h1>🌱 Miljömotioner i Riksdagen</h1>
+  <p>Här visas de senaste motionerna som handlar om miljö, klimat och hållbarhet.</p>
+  <div id="motioner">Hämtar data...</div>
+
+  <script>
+    async function hamtaMiljomotioner() {
+      try {
+        const response = await fetch('/api/miljomotioner');
+        const data = await response.json();
+        const motionerDiv = document.getElementById('motioner');
+        motionerDiv.innerHTML = '';
+
+        if (!data.dokument || data.dokument.length === 0) {
+          motionerDiv.innerHTML = '<p>Inga miljömotioner hittades.</p>';
+          return;
+        }
+
+        data.dokument.slice(0, 10).forEach(motion => {
+          const motionDiv = document.createElement('div');
+          motionDiv.className = 'motion';
+          motionDiv.innerHTML = `
+            <h3>${motion.titel}</h3>
+            <p><strong>Datum:</strong> ${motion.dokumentdatum}</p>
+            <p><a href="https://data.riksdagen.se/dokument/${motion.dok_id}" target="_blank">Läs mer</a></p>
+          `;
+          motionerDiv.appendChild(motionDiv);
+        });
+      } catch (error) {
+        document.getElementById('motioner').innerText = 'Fel vid hämtning av data: ' + error.message;
+      }
+    }
+
+    hamtaMiljomotioner();
+  </script>
+</body>
+</html>
